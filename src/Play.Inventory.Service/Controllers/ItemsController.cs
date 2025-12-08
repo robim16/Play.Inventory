@@ -33,12 +33,12 @@ namespace Play.Inventory.Service.Controllers
                 return BadRequest();
             }
 
-            var catalogItems = await catalogClient.GetCatalogItemsAsync();
-            var inventoryItemEntities = await itemsRepository.GetAllAsync(item => item.UserId == userId);
+            var catalogItems = await catalogClient.GetCatalogItemsAsync();//items del catalogo(Irepository de common recibe un item de catalogo). El cliente consume el catalog
+            var inventoryItemEntities = await itemsRepository.GetAllAsync(item => item.UserId == userId);//filtra por userId. El repositorio de common recibe un item de inventory
 
             var inventoryItemDtos = inventoryItemEntities.Select(inventoryItem =>
             {
-                var catalogItem = catalogItems.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);
+                var catalogItem = catalogItems.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);//busca el item del catalogo pk
                 return inventoryItem.AsDto(catalogItem.Name, catalogItem.Description);
             });
 

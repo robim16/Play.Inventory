@@ -9,7 +9,7 @@ namespace Play.Inventory.Service.Entities
 
         public Guid UserId { get; set; }
 
-        public Guid CatalogItemId { get; set; }
+        public Guid CatalogItemId { get; set; }//referencia al item del catalogo
 
         public int Quantity { get; set; }
         
