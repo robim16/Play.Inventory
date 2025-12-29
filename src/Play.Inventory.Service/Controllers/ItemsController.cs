@@ -15,13 +15,13 @@ namespace Play.Inventory.Service.Controllers
     [Route("items")]
     public class ItemsController : ControllerBase
     {
-        private readonly IRepository<InventoryItem> itemsRepository;
-        private readonly CatalogClient catalogClient;
+        private readonly IRepository<InventoryItem> inventoryItemsRepository;
+        private readonly IRepository<CatalogItem> catalogItemsRepository;
 
-        public ItemsController(IRepository<InventoryItem> itemsRepository, CatalogClient catalogClient)
+        public ItemsController(IRepository<InventoryItem> inventoryItemsRepository, IRepository<CatalogItem> catalogItemsRepository)
         {
-            this.itemsRepository = itemsRepository;
-            this.catalogClient = catalogClient;
+            this.inventoryItemsRepository = inventoryItemsRepository;
+            this.catalogItemsRepository = catalogItemsRepository;
         }
         
 
@@ -33,14 +33,16 @@ namespace Play.Inventory.Service.Controllers
                 return BadRequest();
             }
 
-            var catalogItems = await catalogClient.GetCatalogItemsAsync();//items del catalogo(Irepository de common recibe un item de catalogo). El cliente consume el catalog
-            var inventoryItemEntities = await itemsRepository.GetAllAsync(item => item.UserId == userId);//filtra por userId. El repositorio de common recibe un item de inventory
+            var inventoryItemEntities = await inventoryItemsRepository.GetAllAsync(item => item.UserId == userId);//filtra por userId. El repositorio de common recibe un item de inventory
+
+            var itemIds = inventoryItemEntities.Select(item => item.CatalogItemId);//id del catalogo
+            var catalogItemEntities = await catalogItemsRepository.GetAllAsync();//trae todos los items del catalogo
 
             var inventoryItemDtos = inventoryItemEntities.Select(inventoryItem =>
             {
-                var catalogItem = catalogItems.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);//busca el item del catalogo pk
+                var catalogItem = catalogItemEntities.Single(catalogItem => catalogItem.Id == inventoryItem.CatalogItemId);//busca el item del catalogo que coincida con el catalogo_id del del inventario
                 return inventoryItem.AsDto(catalogItem.Name, catalogItem.Description);
-            });
+            });//crea el dto del inventario con los datos del catalogo
 
             return Ok(inventoryItemDtos);
         }
@@ -48,7 +50,7 @@ namespace Play.Inventory.Service.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync(GrantItemsDto grantItemsDto)
         {
-            var inventoryItem = await itemsRepository.GetAsync(
+            var inventoryItem = await inventoryItemsRepository.GetAsync(
                 item => item.UserId == grantItemsDto.UserId && item.CatalogItemId == grantItemsDto.CatalogItemId);
 
             if (inventoryItem == null)
@@ -60,12 +62,12 @@ namespace Play.Inventory.Service.Controllers
                     Quantity = grantItemsDto.Quantity,
                     AcquiredDate = DateTimeOffset.UtcNow
                 };
-                await itemsRepository.CreateAsync(inventoryItem);
+                await inventoryItemsRepository.CreateAsync(inventoryItem);
             }
             else
             {
                 inventoryItem.Quantity += grantItemsDto.Quantity;
-                await itemsRepository.UpdateAsync(inventoryItem);
+                await inventoryItemsRepository.UpdateAsync(inventoryItem);
             }
 
             return Ok();

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "3PvFoOoswf8=",
+  "dgSpecHash": "9ykNHEGNfEA=",
   "success": true,
   "projectFilePath": "C:\\Users\\andre\\Play.Inventory\\src\\Play.Inventory.Service\\Play.Inventory.Service.csproj",
   "expectedPackageFiles": [
@@ -128,16 +128,5 @@
     "C:\\Users\\andre\\.nuget\\packages\\system.xml.readerwriter\\4.3.1\\system.xml.readerwriter.4.3.1.nupkg.sha512",
     "C:\\Users\\andre\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Play.Inventory.Service depends on Play.Common (>= 1.0.1) but Play.Common 1.0.1 was not found. An approximate best match of Play.Common 1.0.2 was resolved.",
-      "libraryId": "Play.Common",
-      "targetGraphs": [
-        "net5.0"
-      ]
-    }
-  ]
+  "logs": []
 }

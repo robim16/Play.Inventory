@@ -18,7 +18,7 @@ namespace Play.Inventory.Service.Clients
         public async Task<IReadOnlyCollection<CatalogItemDto>> GetCatalogItemsAsync()
         {
             var items = await httpClient.GetFromJsonAsync<IReadOnlyCollection<CatalogItemDto>>("/items");
-            return items;
+            return items;//hace la llamada http al microservicio de catálogo
         }
     }
 }
